@@ -1,0 +1,52 @@
+<html>
+    <head>
+       <head>
+    <title>Boggle</title>    
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/4.4.0/bootbox.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script> 
+        {% if title %}
+        <title>{{ title }} - Lets Boggle</title>
+        {% else %}
+        <title>Boggle</title>
+        {% endif %}
+    </head>
+    <body background="/static/bg1.jpg" style="background-size:cover;overflow-x: hidden;">
+    <div style="text-align: right;margin: 10px">
+      <div class="row">
+        <div class="col-md-4"></div>
+        <div class="col-md-4" style="text-align: center;"><h3>Boggle</h3></div>
+        <div class="col-md-4">
+            <a style="color: black" href="{{ url_for('index') }}">
+            <button type="button" class="btn btn-default" >
+        Home</a></button>
+        {% if current_user.is_anonymous %}
+        <a style="color: white" href="{{ url_for('login') }}">
+        <button type="button" class="btn btn-danger" id="login_btn">
+        Login</button></a>
+        {% else %}
+        <!-- <a href="{{ url_for('pastgame') }}">Show Previous Game</a> -->
+        <a style="color: white" href="{{ url_for('logout') }}">
+        <button type="button" class="btn btn-danger" >
+        Logout ({{current_user.username}})</button></a>
+        {% endif %}
+      </div>
+      </div>
+    </div>
+        <hr>
+<!--         {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <ul>
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %} -->
+        {% block content %}{% endblock %}
+    </body>
+</html>

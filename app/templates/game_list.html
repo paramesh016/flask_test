@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+<ul id="navigation" style="color: black;opacity: 0.7;background: #DCDCDC;">
+{% if games[0] %}
+    <p>Hello {{current_user.username}}, following are the previous games you played.</p>
+{% else %}    
+    <p>Hello {{current_user.username}}, you haven't submitted any score to display</p>      
+{% endif %}
+    {% for game in games %}
+        <li><a style="color: black" href="{{ game.id }}">Boggle {{loop.index}}</a></li>
+    {% endfor %}
+</ul> 
+
+{% endblock %}

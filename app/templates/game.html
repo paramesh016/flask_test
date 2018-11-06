@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+
+{% block content %}
+	<style>
+table, th, td {
+    border: 1px solid black;
+}
+body{
+	overflow-x: hidden;
+}
+li{
+	float: left;
+	display: inline-block;
+}
+</style>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/4.4.0/bootbox.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
+<body data-js-vars=”{{ js_vars }}”>
+<div>
+
+</div>
+{% if current_user.username %}
+  <h6 style="text-align: center;color: white">Hello {{ current_user.username }}!</h6>
+  <span style="float: right"></span>
+{% else %}
+  <h6 style="text-align: center;">Hello, User!</h6>
+{% endif %}
+
+<div style="text-align: center;">
+<table id="boggle_table" style="border-spacing: 0px; color: black; background: white; opacity: 0.8;border-collapse: separate;margin: 10px;text-align: center;display: inline-block;font-weight: 900" cellpadding="10"  WIDTH="220">
+</table>
+<div style="margin-top: 30px;" id="user_input">
+	{% if not pastgame=="yes" %}
+	<div class=row>
+		<div class="col-sm-2 col-xs-2 col-md-4 col-lg-4"><div class="alert alert-warning" id="alert_msg" style="width: 80%;float: right;margin-right: 10px;" role="alert"></div></div>	 
+		<div class="col-sm-2 col-xs-2 col-md-4 col-lg-4 reveal_div"><input type="text" class="form-control" id="usr" style="width: 100%;margin: 10px;display: inline;"></div>
+			 
+		<div class="col-sm-8 col-xs-8 col-md-4 col-lg-4">
+		<div class="reveal_div">
+			<button type="button" class="btn btn-success" style="margin: 10px;display: inline;float: left;" id="check_word">Check</button>
+			<button type="button" class="btn btn-success" style="margin: 10px;display: inline;float: left;" id="reveal_words">Reveal Answer</button>	
+		</div>	
+			<button type="button" class="btn btn-primary" style="margin: 10px;display: inline;" id="submit_answer">Submit</button>	
+		</div>
+	</div>
+	{% endif %} 
+		<div class="row">
+		<div class="col-sm-8 col-md-11 col-lg-11"></div>
+		<div class="col-sm-14 col-md-1 col-lg-1">
+		<a href="{{ url_for('pastgame') }}">
+<button type="button" class="btn btn-success" style="margin: 10px;display: inline;float: right;" id="check_word">Show History</button></a></div></div>
+		
+	 <input type="hidden" id="myVar" name="variable" value="{{ ctx['board_val'] }}">
+	 <div class="alert alert-success" role="alert" id="max_score"></div>
+	 {% if pastgame=="yes" %}
+	 <div class="alert alert-info" role="alert" id="user_score">Number of words found by you : {{ctx['score']}}</div>
+	 <div class="alert alert-warning" role="alert" id="found_lists" style="float: left; width:100%">
+	 		Words found by you: 
+	 </div>
+	 <div class="alert alert-danger" role="alert" id="reveal_words_divs" style="overflow: scroll;"> <p style="position: fixed;">Words Available :</p> </div>
+	 {% else %}
+	 <div class="alert alert-info" role="alert" id="user_score">Number of words found by you : 0</div>
+	 	 <div class="alert alert-warning" role="alert" id="found_list" style="float: left; width:100%">
+	 		Words found by you: 
+	 	</div>
+	 	<div class="alert alert-danger" role="alert" id="reveal_words_div" style="overflow: scroll;"><p style="position: fixed;">Words Available : </p></div> 
+	 {% endif %}
+</div>
+</div>
+</body>
+
+<script type="text/javascript">
+	var dict_words;
+	var score=0;
+	var max_score;
+	var found_values = [];
+	var is_past = "{{pastgame}}";
+	if (is_past=="yes"){ var found_val =  "{{ctx['found_val'] | safe}}";}
+	var boogle_board = {{ctx['board']|safe}};
+	$(document).ready(function(){
+   		var i;   	
+   		$('#alert_msg').hide();
+   		$('#found_list').hide();
+   		$('#reveal_words_div').hide();
+   		board = {{ctx['board']|safe}};   	
+   		dict_words =  "{{ctx['board_val'] | safe}}";
+
+   		$("#max_score").html(max_score);
+   		dict_words = dict_words.split('[')[1]
+   		dict_words = dict_words.split(']')[0]
+   		dict_words = dict_words.replace (/'/g, "");
+   		dict_words = dict_words.replace(/ /g,'')
+   		dict_words = dict_words.split(',')
+   		max_score = dict_words.length;
+   		$('#max_score').html('Total number of words present in the Boggle : '+max_score);
+		for (i = 0; i < board.length; i++) {
+		    val = '<tr>'		    
+		    for(j=0;j<board[i].length; j++){
+		    	val += '<td style="width:58px">'+board[i][j]+'</td>'		    	
+		    	
+		    }	
+		val += '</tr>'        		    
+		$('#boggle_table').append(val);
+		}
+		if (is_past=="yes"){
+	   		found_val = found_val.split('[')[1]
+	   		found_val = found_val.split(']')[0]
+	   		found_val = found_val.replace (/'/g, "");
+	   		found_val = found_val.replace(/ /g,'')
+	   		found_val = found_val.split(',')
+			$.each(dict_words, function( index, value ) {
+					$('#reveal_words_divs').append(value+',');
+			});
+			$('#reveal_words_divs').text(function (_,txt) {
+	    		return txt.slice(0, -1);
+			});	
+			$.each(found_val, function( index, value ) {
+					$('#found_lists').append(value+',');
+			});
+			$('#found_lists').text(function (_,txt) {
+	    		return txt.slice(0, -1);
+			});	
+		}
+	});
+	$('#check_word').click(function(){
+		$('#alert_msg').show();
+		input_val = $('#usr').val().toUpperCase();
+		if (input_val==""){
+			setTimeout(function() { $('#alert_msg').hide(); }, 5000);
+			$('#alert_msg').html('Enter a word and then press check!!');	
+			return
+		}
+		valid_check = dict_words.includes(input_val);
+		already_found = found_values.includes(input_val);
+		if(valid_check && !already_found){
+			score++;
+			$('#found_list').show();			
+			$('#user_score').html('Number of words found by you : '+score);
+			found_values.push(input_val);
+			setTimeout(function() { $('#alert_msg').hide(); }, 5000);
+			$('#alert_msg').html('Nice Job, you found one');
+			$("#found_list").append(input_val+ ' , ');
+			$('#usr').val("");
+		}
+		else if (already_found) {
+		setTimeout(function() { $('#alert_msg').hide(); }, 5000);
+		$('#alert_msg').html('You had already found that word.');
+		}
+		else{
+		setTimeout(function() { $('#alert_msg').hide(); }, 5000);
+		$('#alert_msg').html('Sorry, thats a wrong combination.');
+		}
+	});
+	$('#reveal_words').click(function(){
+		bootbox.confirm({
+		    message: "Are you sure you want to peep into the answer, your score will be locked if you proceed?",
+		    buttons: {
+		        confirm: {
+		            label: "Yes, I'm sure",
+		            className: 'btn-success'
+		        },
+		        cancel: {
+		            label: 'No',
+		            className: 'btn-danger'
+		        }
+		    },
+		    callback: function (result) {
+		    	$("#reveal_words_div").show();
+		    	if(result){
+					$('.reveal_div').remove();		    		
+					$.each(dict_words, function( index, value ) {
+  						$('#reveal_words_div').append(value+',');
+					});
+					$('#reveal_words_div').text(function (_,txt) {
+			    		return txt.slice(0, -1);
+					});					    		
+		    	}
+		    }
+		});
+		
+	});
+	$("#submit_answer").click(function(){
+		data = {"score": score, "found_list":found_values, "boggle_board":JSON.stringify(boogle_board), "words_list":dict_words};
+		$.ajax({
+  			type: 'POST',
+			url: "/answer-submit/",
+			data: data,
+			dataType: 'json',
+			success: function (result) {
+			bootbox.alert(result, function(){ window.location.href = "{{ url_for('pastgame') }}" });
+			},
+            error: function (e) {
+              bootbox.alert(e, function(){ location.reload(); });
+            }
+		});
+	});
+</script>
+<!-- <script type="text/javascript" src="{{ url_for('static', filename='game.js') }}"></script> -->
+{% endblock %}

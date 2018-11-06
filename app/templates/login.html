@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style type="text/css">
+    .form-control{
+        text-align: left !important;
+    }
+
+</style>
+<script type="text/javascript">
+  $(document).ready(function(){
+    $('#login_btn').hide();
+ document.getElementById('username').className = 'form-control';
+ document.getElementById('password').className = 'form-control';
+ document.getElementById('submit').className = 'btn btn-lg btn-primary btn-block';
+
+});
+</script>
+<div style="margin: 20px;color: white">
+        <div class="row" style="color: white; margin-top: 56px;">
+                <div class="col-md-4"></div>
+                <div class="col-md-4"></div>
+                <div class="col-md-4">
+    <h1 style="color: white">Sign In</h1>
+    <p style="">New User? <a style="color: #87cefa" href="{{ url_for('register') }}">Click to Register!</a></p>
+</div>
+</div>
+    <form action="" method="post" novalidate>
+        {{ form.hidden_tag() }}
+        
+        <p>
+            <div class="row" style="width: 98%">
+                <div class="col-md-4"></div>
+                <div class="col-md-4" style="border-radius: 4px;">
+                
+                </div>
+                <div class="col-md-4" style="background: #DCDCDC;color: black;border-radius: 4px;">
+            {{ form.username.label }}<br>
+            {{ form.username(size=32) }} 
+            {% for error in form.username.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+            <!-- </div> -->
+        <!-- </div> -->
+        </p>
+        <p>            
+            <!-- <div class="row" > -->
+               <!--  <div class="col-md-4"></div>
+                <div class="col-md-4"></div> -->
+                <!-- <div class="col-md-4" style="background: #808080"> -->
+            {{ form.password.label }}<br>
+            {{ form.password(size=32) }}<br>
+            {% for error in form.password.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+                        <!-- </div> -->
+        <!-- </div> -->
+        </p>
+                    <!-- <div class="row">
+                <div class="col-md-4"></div>
+                <div class="col-md-4"></div>
+                <div class="col-md-4" > -->
+        <!-- <p style="float: left !important;">{{ form.remember_me() }} {{ form.remember_me.label }}</p> -->
+        <div style="color: red" style="margin-top:10px">
+        {% with messages = get_flashed_messages() %}
+                  {% if messages %}
+                    <ul class=flashes>
+                    {% for message in messages %}
+                      <li>{{ message }}</li>
+                    {% endfor %}
+                    </ul>
+                  {% endif %}
+                {% endwith %}
+        <p>{{ form.submit() }}</p>
+        </div>
+    </div>
+</div>
+    </form>
+ </div>   
+{% endblock %}
